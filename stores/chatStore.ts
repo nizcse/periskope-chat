@@ -11,6 +11,8 @@ type Chat = {
   participants?: { name: string; avatarUrl?: string; color?: string }[];
   phoneCount?: number;
   phoneTotal?: number;
+  phoneNumber?: string;
+  lastMessageSenderAvatarUrl?: string;
 }
 
 // Define the mock chats here
@@ -30,6 +32,8 @@ const mockChats: Chat[] = [
     ],
     phoneCount: 3,
     phoneTotal: 5,
+    phoneNumber: '+91 99718 44008',
+    lastMessageSenderAvatarUrl: '',
   },
   {
     id: '2',
@@ -47,6 +51,8 @@ const mockChats: Chat[] = [
     ],
     phoneCount: 5,
     phoneTotal: 6,
+    phoneNumber: '+91 99718 44008',
+    lastMessageSenderAvatarUrl: '',
   },
   {
     id: '3',
@@ -62,6 +68,8 @@ const mockChats: Chat[] = [
     ],
     phoneCount: 1,
     phoneTotal: 1,
+    phoneNumber: '+91 92896 65999',
+    lastMessageSenderAvatarUrl: '',
   },
     {
     id: '4',
@@ -76,6 +84,8 @@ const mockChats: Chat[] = [
     ],
     phoneCount: 2,
     phoneTotal: 2,
+    phoneNumber: '+91 XXXX XXXX',
+    lastMessageSenderAvatarUrl: '',
   },
   {
     id: '5',
@@ -93,6 +103,8 @@ const mockChats: Chat[] = [
     ],
     phoneCount: 5,
     phoneTotal: 6,
+    phoneNumber: '+91 XXXX XXXX',
+    lastMessageSenderAvatarUrl: '',
   },
   // ...add more mock chats as needed
 ]
