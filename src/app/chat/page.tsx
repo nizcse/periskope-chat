@@ -36,12 +36,12 @@ export default function ChatPage() {
           </aside>
 
           {/* Main Chat Area (Chat Window + Input) - Always visible with flex sizing */}
-          <main className="flex flex-[2.5] flex-col h-full h-0 min-h-full">
+          <main className="flex flex-[2.5] flex-col h-full h-0 min-h-full chat-main-background">
             {/* Chat Window */}
             <header className="h-[64px] border-b border-gray-800 bg-white dark:bg-gray-950 flex items-center px-6 w-full">
               <ChatHeader />
             </header>
-            <section className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900">
+            <section className="flex-1 overflow-y-auto p-6 chat-window-scrollbar">
               <ChatWindow />
             </section>
             {/* Message Input */}
@@ -59,6 +59,54 @@ export default function ChatPage() {
           <Modal />
         </div>
       </div>
+      <style jsx global>{`
+        .chat-window-scrollbar::-webkit-scrollbar {
+          width: 0;
+          background: transparent;
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+          border: none;
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-thumb {
+          background-color: transparent;
+          border-radius: 0;
+          border: none;
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: transparent;
+          border: none;
+        }
+        /* For Firefox */
+        .chat-window-scrollbar {
+          scrollbar-width: none;
+        }
+
+        /* For Internet Explorer and Edge (Legacy) */
+        .chat-window-scrollbar {
+            -ms-overflow-style: none;
+        }
+
+        /* Background image for light and dark modes on the main content area */
+        /* Light mode (default) */
+        :global(.light) .chat-main-background {
+          background-image: url('/assets/image/backgroundLight.jpg');
+          background-size: cover;
+          background-repeat: repeat;
+          background-attachment: fixed;
+        }
+
+        /* Dark mode */
+        :global(.dark .chat-main-background) {
+          background-image: url('/assets/image/backgroundDark.jpg');
+          background-size: cover;
+          background-repeat: repeat;
+          background-attachment: fixed;
+        }
+      `}</style>
     </div>
   )
 } 

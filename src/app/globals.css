@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Background styles for auth and chat pages */
+.auth-background,
+.chat-main-background {
+  background-image: url('/assets/image/backgroundLight.jpg');
+  background-size: cover;
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+html.dark .auth-background,
+html.dark .chat-main-background {
+  background-image: url('/assets/image/backgroundDark.jpg');
+}

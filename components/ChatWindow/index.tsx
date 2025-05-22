@@ -120,7 +120,7 @@ export default function ChatWindow() {
 
   return (
     <div className="flex flex-col w-full ">
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className="flex-1 overflow-y-auto px-2 chat-window-scrollbar">
         {dates.map(date => (
           <div key={date}>
             {/* Date divider */}
@@ -142,6 +142,37 @@ export default function ChatWindow() {
           </div>
         ))}
       </div>
+      <style jsx>{`
+        .chat-window-scrollbar::-webkit-scrollbar {
+          width: 0;
+          background: transparent; /* Ensure the background is transparent */
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+          border: none; /* Remove any potential border */
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-thumb {
+          background-color: transparent; /* Make thumb transparent */
+          border-radius: 0;
+          border: none; /* Remove any potential border on the thumb */
+        }
+
+        .chat-window-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: transparent; /* Keep thumb transparent on hover */
+          border: none; /* Remove any potential border on hover */
+        }
+        /* For Firefox */
+        .chat-window-scrollbar {
+          scrollbar-width: none; /* Hide scrollbar in Firefox */
+        }
+
+        /* For Internet Explorer and Edge (Legacy) */
+        .chat-window-scrollbar {
+          -ms-overflow-style: none;
+        }
+      `}</style>
     </div>
   );
 } 

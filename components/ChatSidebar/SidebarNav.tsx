@@ -1,3 +1,5 @@
+"use client";
+
 import { FaHome, FaComments, FaUserFriends, FaTasks, FaCog } from 'react-icons/fa';
 import { IoMdChatbubbles } from 'react-icons/io';
 import { MdOutlineLabel } from 'react-icons/md';
