@@ -23,7 +23,7 @@ useEffect(()=>{
     return null;
   }}
   check();
-},[])
+},[router])
   return (
     <div className="flex h-screen w-screen bg-gray-900 overflow-x-hidden overflow-y-hidden">
       {/* Add theme toggle button */}

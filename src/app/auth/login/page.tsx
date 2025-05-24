@@ -22,9 +22,9 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       router.push('/chat'); // Redirect to chat page after successful login
-    } catch (err: any) {
-      setError(err.message || 'Failed to login. Please check your credentials.');
-    } finally {
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }finally {
       setIsLoading(false);
     }
   };
@@ -80,7 +80,7 @@ export default function LoginPage() {
                   <a href="#" className="text-sm text-green-600 dark:text-green-400 hover:underline">Forgot password?</a>
                 </div>
                 <div className="mt-4 text-center">
-                  <span className="text-gray-600 dark:text-gray-400">Don't have an account? </span>
+                  <span className="text-gray-600 dark:text-gray-400">Don&apos;t have an account? </span>
                   <Link href="/auth/signup" className="text-green-600 dark:text-green-400 hover:underline">Sign Up</Link>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { FaUserCircle } from 'react-icons/fa';
+
 import { FiCheckCircle, FiSend } from 'react-icons/fi';
 
 interface MessageBubbleProps {

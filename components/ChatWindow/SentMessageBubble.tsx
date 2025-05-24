@@ -1,5 +1,4 @@
 import { useAuthStore } from '@/stores/authStore';
-import { FaUserCircle } from 'react-icons/fa';
 import { FiCheckCircle, FiSend } from 'react-icons/fi';
 
 interface SentMessageBubbleProps {
@@ -13,11 +12,9 @@ interface SentMessageBubbleProps {
 
 export default function SentMessageBubble({
   senderName,
-  avatarUrl,
   content,
   timestamp,
   phoneNumber,
-  senderEmail,
 }: SentMessageBubbleProps) {
   const {user} = useAuthStore()
   return (

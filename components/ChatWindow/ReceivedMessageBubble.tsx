@@ -1,4 +1,4 @@
-import { FaUserCircle } from 'react-icons/fa';
+
 
 interface ReceivedMessageBubbleProps {
   senderName: string;

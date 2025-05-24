@@ -1,28 +1,27 @@
 "use client";
-import { FiRefreshCw, FiHelpCircle, FiSearch, FiMoreVertical } from 'react-icons/fi';
-import { BsFillCircleFill } from 'react-icons/bs';
+import {  FiSearch, FiMoreVertical } from 'react-icons/fi';
 import { useChatStore } from '@/stores/chatStore';
 import { HiOutlineUsers } from "react-icons/hi";
 
-const mockChats = [
-  {
-    id: '1',
-    name: 'Test El Centro',
-    participants: [
-      { name: 'Roshnaq Airtel', avatarUrl: '', color: 'bg-green-500' },
-      { name: 'Roshnaq Jio', avatarUrl: '', color: 'bg-blue-500' },
-      { name: 'Bharat Kumar Ramesh', avatarUrl: '', color: 'bg-yellow-500' },
-      { name: 'Periskope', avatarUrl: '', color: 'bg-gray-400' },
-      // ...add more as needed
-    ],
-    phoneCount: 5,
-    phoneTotal: 6,
-  },
-  // ...add more mock chats as needed
-];
+// const mockChats = [
+//   {
+//     id: '1',
+//     name: 'Test El Centro',
+//     participants: [
+//       { name: 'Roshnaq Airtel', avatarUrl: '', color: 'bg-green-500' },
+//       { name: 'Roshnaq Jio', avatarUrl: '', color: 'bg-blue-500' },
+//       { name: 'Bharat Kumar Ramesh', avatarUrl: '', color: 'bg-yellow-500' },
+//       { name: 'Periskope', avatarUrl: '', color: 'bg-gray-400' },
+//       // ...add more as needed
+//     ],
+//     phoneCount: 5,
+//     phoneTotal: 6,
+//   },
+//   // ...add more mock chats as needed
+// ];
 
 export default function ChatHeader() {
-  const { selectedChatId, getSelectedChat } = useChatStore();
+  const {  getSelectedChat } = useChatStore();
   const chat = getSelectedChat();
 
   if (!chat) {
@@ -46,7 +45,7 @@ export default function ChatHeader() {
             {chat.name}
           </span>
           <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {chat.participants?.map((p) => p.name).join(', ')}
+            {chat.participants?.map((p) => p.display_name).join(', ')}
           </span>
         </div>
       </div>
@@ -58,14 +57,14 @@ export default function ChatHeader() {
         <div className="flex -space-x-1 overflow-hidden">
         {chat.participants?.slice(0, 4).map((p, i) => (
           <div
-            key={p.name}
-            className={`w-7 h-7 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center text-xs font-bold text-white overflow-hidden ${p.color}`}
+            key={p.display_name}
+            className={`w-7 h-7 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center text-xs font-bold text-white overflow-hidden white}`}
             style={{ zIndex: 10 - i }}
           >
             {p?.avatar_url ? (
-              <img src={p.avatar_url} alt={p.name} className="w-full h-full rounded-full object-cover" />
+              <img src={p.avatar_url} alt={p.display_name} className="w-full h-full rounded-full object-cover" />
             ) : (
-              <span className="flex items-center justify-center w-full h-full text-gray-700 dark:text-gray-200 text-xs">{p.display_name[0]}</span>
+              <span className="flex items-center justify-center w-full h-full text-gray-700 dark:text-gray-200 text-xs">{p?.display_name?.[0] ?? p?.email[0]}</span>
             )}
           </div>
         ))}

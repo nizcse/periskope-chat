@@ -45,8 +45,8 @@ export default function CreateChatModal({ isOpen, onClose }: CreateChatModalProp
       setChatName('');
       setParticipants([]);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 

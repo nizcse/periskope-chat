@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import React from 'react'; // Import React for React.FormEvent type
 import { useAuthStore } from '@/stores/authStore';
 
@@ -8,7 +7,6 @@ export const useLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { signIn } = useAuthStore(); // Get the signIn action from authStore
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -38,9 +36,9 @@ export const useLogin = () => {
       // Example redirect after successful login (if not handled by authStore listener)
        // router.push('/chat'); // Redirect to chat page after successful login - removed for now, assuming authStore handles redirection
 
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login.');
-    } finally {
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }finally {
       setLoading(false);
     }
   };

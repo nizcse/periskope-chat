@@ -1,14 +1,13 @@
 "use client";
-import { ReactNode } from "react";
 import { useUIStore } from '@/stores/uiStore'
 import { IoClose } from 'react-icons/io5'
 
-type Props = {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children?: ReactNode;
-};
+// type Props = {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   title: string;
+//   children?: ReactNode;
+// };
 
 export const Modal = () => {
   const { isModalOpen, modalContent, closeModal } = useUIStore()

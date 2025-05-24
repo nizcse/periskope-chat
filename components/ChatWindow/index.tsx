@@ -4,7 +4,6 @@ import { format, isToday, isYesterday, isThisYear } from 'date-fns';
 import { useChatStore } from '@/stores/chatStore';
 import SentMessageBubble from './SentMessageBubble';
 import ReceivedMessageBubble from './ReceivedMessageBubble';
-import MessageInput from './MessageInput';
 import { useAuthStore } from '@/stores/authStore';
 import { useEffect, useRef } from 'react';
 
@@ -23,93 +22,93 @@ interface Message {
 }
 
 // Mock messages for demonstration
-const mockMessages1 = [
-  {
-    id: 'm1',
-    chatId: '1',
-    isOwn: false,
-    senderName: 'Roshnaq Airtel',
-    phoneNumber: '+91 63846 47925',
-    content: 'Hello, South Euna!',
-    timestamp: '08:01',
-    date: '22-01-2025',
-  },
-  {
-    id: 'm2',
-    chatId: '1',
-    isOwn: false,
-    senderName: 'Roshnaq Airtel',
-    phoneNumber: '+91 63846 47925',
-    content: 'Hello, Livonia!',
-    timestamp: '08:01',
-    date: '23-01-2025',
-  },
-  {
-    id: 'm3',
-    chatId: '1',
-    isOwn: false,
-    senderName: 'Roshnaq Airtel',
-    phoneNumber: '+91 63846 47925',
-    content: 'CDERT',
-    timestamp: '09:49',
-    date: '23-01-2025',
-  },
-  {
-    id: 'm4',
-    chatId: '1',
-    isOwn: true,
-    senderName: 'Periskope',
-    phoneNumber: '+91 99718 44008',
-    content: 'test el centro',
-    timestamp: '09:49',
-    date: '23-01-2025',
-    senderEmail: 'bharat@hashlabs.dev'
-  },
-  {
-    id: 'm5',
-    chatId: '1',
-    isOwn: true,
-    senderName: 'Periskope',
-    phoneNumber: '+91 99718 44008',
-    content: 'testing',
-    timestamp: '09:49',
-    date: '23-01-2025',
-    senderEmail: 'bharat@hashlabs.dev'
-  },
-  {
-    id: 'm6',
-    chatId: '1',
-    isOwn: true,
-    senderName: 'Periskope',
-    phoneNumber: '+91 99718 44008',
-    content: 'testing',
-    timestamp: '09:49',
-    date: '23-01-2025',
-    senderEmail: 'bharat@hashlabs.dev'
-  },
-  {
-    id: 'm7',
-    chatId: '1',
-    isOwn: true,
-    senderName: 'Periskope',
-    phoneNumber: '+91 99718 44008',
-    content: 'testing',
-    timestamp: '09:49',
-    date: '23-01-2025',
-    senderEmail: 'bharat@hashlabs.dev'
-  },
-  {
-    id: 'm8',
-    chatId: '1',
-    isOwn: true,
-    senderName: 'Periskope',
-    phoneNumber: '+91 99718 44008',
-    content: 'testing',
-    timestamp: '09:49',
-    date: '23-01-2025',
-    senderEmail: 'bharat@hashlabs.dev'
-  },
-]
+// const mockMessages1 = [
+//   {
+//     id: 'm1',
+//     chatId: '1',
+//     isOwn: false,
+//     senderName: 'Roshnaq Airtel',
+//     phoneNumber: '+91 63846 47925',
+//     content: 'Hello, South Euna!',
+//     timestamp: '08:01',
+//     date: '22-01-2025',
+//   },
+//   {
+//     id: 'm2',
+//     chatId: '1',
+//     isOwn: false,
+//     senderName: 'Roshnaq Airtel',
+//     phoneNumber: '+91 63846 47925',
+//     content: 'Hello, Livonia!',
+//     timestamp: '08:01',
+//     date: '23-01-2025',
+//   },
+//   {
+//     id: 'm3',
+//     chatId: '1',
+//     isOwn: false,
+//     senderName: 'Roshnaq Airtel',
+//     phoneNumber: '+91 63846 47925',
+//     content: 'CDERT',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//   },
+//   {
+//     id: 'm4',
+//     chatId: '1',
+//     isOwn: true,
+//     senderName: 'Periskope',
+//     phoneNumber: '+91 99718 44008',
+//     content: 'test el centro',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//     senderEmail: 'bharat@hashlabs.dev'
+//   },
+//   {
+//     id: 'm5',
+//     chatId: '1',
+//     isOwn: true,
+//     senderName: 'Periskope',
+//     phoneNumber: '+91 99718 44008',
+//     content: 'testing',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//     senderEmail: 'bharat@hashlabs.dev'
+//   },
+//   {
+//     id: 'm6',
+//     chatId: '1',
+//     isOwn: true,
+//     senderName: 'Periskope',
+//     phoneNumber: '+91 99718 44008',
+//     content: 'testing',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//     senderEmail: 'bharat@hashlabs.dev'
+//   },
+//   {
+//     id: 'm7',
+//     chatId: '1',
+//     isOwn: true,
+//     senderName: 'Periskope',
+//     phoneNumber: '+91 99718 44008',
+//     content: 'testing',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//     senderEmail: 'bharat@hashlabs.dev'
+//   },
+//   {
+//     id: 'm8',
+//     chatId: '1',
+//     isOwn: true,
+//     senderName: 'Periskope',
+//     phoneNumber: '+91 99718 44008',
+//     content: 'testing',
+//     timestamp: '09:49',
+//     date: '23-01-2025',
+//     senderEmail: 'bharat@hashlabs.dev'
+//   },
+// ]
 
 function groupMessagesByDate(messages: Message[]) {
   return messages.reduce<Record<string, Message[]>>((groups, msg) => {
@@ -174,7 +173,6 @@ export default function ChatWindow() {
   // Filter and group messages for the selected chat
   const messages = mockMessages.filter(m => m.chat_id === selectedChat.id)
   const grouped = groupMessagesByDate(messages)
-  const dates = Object.keys(grouped).sort()
 
   return (
     <div className="flex-1 flex flex-col h-full">

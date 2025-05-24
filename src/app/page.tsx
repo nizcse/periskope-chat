@@ -10,7 +10,7 @@ export default function Home() {
   const router = useRouter();
   const { setUser, setSession } = useAuthStore();
   const [isVerifying, setIsVerifying] = useState(true);
-  const { chats, loading, error, fetchChats, messages } = useChatStore();
+  const {  fetchChats } = useChatStore();
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -52,7 +52,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [fetchChats]);
 
   // Show loading state while verifying authentication
   if (isVerifying) {
