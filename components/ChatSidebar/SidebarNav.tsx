@@ -1,6 +1,6 @@
 "use client";
 
-import { FaHome, FaComments, FaUserFriends, FaTasks, FaCog } from 'react-icons/fa';
+import { FaHome, FaUserFriends, FaCog } from 'react-icons/fa';
 import { IoMdChatbubbles } from 'react-icons/io';
 import { MdOutlineLabel } from 'react-icons/md';
 import { HiOutlineUsers } from 'react-icons/hi';
@@ -25,7 +25,7 @@ export default function SidebarNav() {
       </div>
       {/* Nav Icons */}
       <div className="flex flex-col gap-2 flex-1">
-        {navItems.map((item, idx) => (
+        {navItems.map((item) => (
           <button
             key={item.label}
             className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${item.active ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}

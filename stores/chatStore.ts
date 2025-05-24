@@ -33,7 +33,7 @@ export interface Chat {
   name: string | null;
   avatarUrl: string | null;
   phone?:string;
-  last_updated :DateConstructor;
+  last_updated :Date|string;
 };
 }
 

@@ -19,7 +19,7 @@ interface ChatListItemProps {
     name: string | null;
     phone?:string;
     avatarUrl: string | null;
-    last_updated :DateConstructor;
+    last_updated: string | Date;
   };
   timestamp?: string;
   unreadCount?: number;
@@ -34,10 +34,7 @@ export default function ChatListItem({
   name,
   labels = [],
   last_message,
-  timestamp,
   unreadCount,
-  phoneNumber,
-  lastMessageSenderAvatarUrl,
 }: ChatListItemProps) {
   const { selectChat } = useChatStore();
 
@@ -97,7 +94,7 @@ console.log(last_message,id,'lastMessage')
            <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[160px]">
              {last_message?.phone?last_message?.phone:last_message?.email}
            </div>
-        <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(last_message?.last_updated).toLocaleTimeString()}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">{last_message?.last_updated ? new Date(last_message.last_updated).toLocaleTimeString() : ''}</span>
         </div>
       </div>
     </div>

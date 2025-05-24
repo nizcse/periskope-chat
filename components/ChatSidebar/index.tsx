@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import SidebarNav from './SidebarNav'
 import ChatListHeader from './ChatListHeader'
 import ChatListItem from './ChatListItem'
 import { useChatStore } from '@/stores/chatStore'

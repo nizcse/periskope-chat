@@ -16,7 +16,7 @@ export default function MessageInput() {
     if (!message.trim() || !selectedChat) return;
 
     try {
-      await sendMessage(message, user?.user_metadata);
+      await sendMessage(message, user);
       setMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
