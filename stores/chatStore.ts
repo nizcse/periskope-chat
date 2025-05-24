@@ -32,6 +32,7 @@ export interface Chat {
   email: string;
   name: string | null;
   avatarUrl: string | null;
+  phone?:string;
   last_updated :DateConstructor;
 };
 }
@@ -189,12 +190,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         .update({
           last_message: {
             content: content,
-              id: userId,
-              email: user?.user_metadata?.email || '',
-              name: user?.user_metadata?.display_name || null,
-              avatarUrl: user?.user_metadata?.avatar_url || null,
-              phone: user?.phone,
-              last_updated:Date.now()
+            id: userId,
+            email: user?.user_metadata?.email || '',
+            name: user?.user_metadata?.display_name || null,
+            avatarUrl: user?.user_metadata?.avatar_url || null,
+            phone: user?.phone,
+            last_updated: new Date().toISOString()
           }
         })
         .eq('id', selectedChatId)

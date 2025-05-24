@@ -8,22 +8,31 @@ import MessageInput from '@/components/MessageInput'
 import ChatParentHeader from '@/components/ChatParentHeader'
 import SidebarNav from '@/components/ChatSidebar/SidebarNav'
 import RightSidebar from '@/components/RightSidebar'
-import { useChatStore } from '@/stores/chatStore'
-import { useTheme } from '@/src/components/ThemeProvider'
+import { useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function ChatPage() {
-  const { selectedChatId } = useChatStore();
-  const { theme, toggleTheme } = useTheme();
-
+  const router = useRouter();
+useEffect(()=>{
+  const check = async () =>{
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    console.log("getCrrUsr")
+    router.replace("/auth/login");
+    return null;
+  }}
+  check();
+},[])
   return (
     <div className="flex h-screen w-screen bg-gray-900 overflow-x-hidden overflow-y-hidden">
       {/* Add theme toggle button */}
-      <button 
+      {/* <button 
         onClick={toggleTheme}
         className="fixed top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-white rounded"
       >
         Toggle Theme ({theme})
-      </button>
+      </button> */}
 
       {/* Vertical Icon Bar (Left Sidebar)*/}
       <SidebarNav />

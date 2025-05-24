@@ -26,7 +26,12 @@ body {
 }
 
 /* Background styles for auth and chat pages */
-.auth-background,
+.auth-background {
+  background-image: url('/assets/image/backgroundLight.jpg');
+}
+html.dark .auth-background{
+  background-image: url('/assets/image/backgroundDark.jpg');
+}
 .chat-main-background {
   /* background-image: url('/assets/image/backgroundLight.jpg'); */
   background-size: cover;
@@ -34,7 +39,6 @@ body {
   background-attachment: fixed;
 }
 
-html.dark .auth-background,
 html.dark .chat-main-background {
   background-image: url('/assets/image/backgroundDark.jpg');
 }

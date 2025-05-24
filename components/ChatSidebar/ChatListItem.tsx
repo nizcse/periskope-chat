@@ -17,6 +17,7 @@ interface ChatListItemProps {
     id: string;
     email: string;
     name: string | null;
+    phone?:string;
     avatarUrl: string | null;
     last_updated :DateConstructor;
   };
@@ -94,7 +95,7 @@ console.log(last_message,id,'lastMessage')
         {/* Bottom Row: Phone Number and Timestamp */}
         <div className="flex items-center justify-between gap-2">
            <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[160px]">
-             {last_message?.email}
+             {last_message?.phone?last_message?.phone:last_message?.email}
            </div>
         <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(last_message?.last_updated).toLocaleTimeString()}</span>
         </div>
