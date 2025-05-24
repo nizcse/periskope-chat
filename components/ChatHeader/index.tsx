@@ -62,10 +62,10 @@ export default function ChatHeader() {
             className={`w-7 h-7 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center text-xs font-bold text-white overflow-hidden ${p.color}`}
             style={{ zIndex: 10 - i }}
           >
-            {p.avatarUrl ? (
-              <img src={p.avatarUrl} alt={p.name} className="w-full h-full rounded-full object-cover" />
+            {p?.avatar_url ? (
+              <img src={p.avatar_url} alt={p.name} className="w-full h-full rounded-full object-cover" />
             ) : (
-              <span className="flex items-center justify-center w-full h-full text-gray-700 dark:text-gray-200 text-xs">{p.name[0]}</span>
+              <span className="flex items-center justify-center w-full h-full text-gray-700 dark:text-gray-200 text-xs">{p.display_name[0]}</span>
             )}
           </div>
         ))}

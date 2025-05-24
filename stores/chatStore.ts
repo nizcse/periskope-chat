@@ -1,133 +1,462 @@
 import { create } from 'zustand'
-import { Database } from '@/types/supabase'
+import { supabase } from '@/lib/supabase'
+import { RealtimeChannel, User, UserMetadata } from '@supabase/supabase-js'
 
-type Chat = {
-  id: string;
-  name: string;
-  labels?: { name: string; color: string }[];
-  lastMessage?: string;
-  timestamp?: string;
-  unreadCount?: number;
-  participants?: { name: string; avatarUrl?: string; color?: string }[];
-  phoneCount?: number;
-  phoneTotal?: number;
-  phoneNumber?: string;
-  lastMessageSenderAvatarUrl?: string;
+export interface Message {
+  id: string
+  chat_id: string
+  sender_id: string
+  content: string
+  created_at: string
+  sender: {
+    id: string
+    email: string
+    name?: string
+    avatarUrl?: string
+  }
 }
 
-// Define the mock chats here
-const mockChats: Chat[] = [
-  {
-    id: '1',
-    name: 'Test Skope Final 5',
-    labels: [
-      { name: 'Demo', color: 'text-yellow-700 bg-yellow-200' },
-    ],
-    lastMessage: "Support12: This doesn't go on Tuesday...",
-    timestamp: 'Yesterday',
-    unreadCount: 2,
-    participants: [
-       { name: 'User 1', avatarUrl: '', color: 'bg-blue-500' },
-       { name: 'User 2', avatarUrl: '', color: 'bg-green-500' },
-    ],
-    phoneCount: 3,
-    phoneTotal: 5,
-    phoneNumber: '+91 99718 44008',
-    lastMessageSenderAvatarUrl: '',
-  },
-  {
-    id: '2',
-    name: 'Periskope Team Chat',
-    labels: [
-      { name: 'Demo', color: 'text-yellow-700 bg-yellow-200' },
-      { name: 'internal', color: 'text-green-700 bg-green-200' },
-    ],
-    lastMessage: 'Periskope: Test message',
-    timestamp: '28-Feb-25',
-     participants: [
-       { name: 'User A', avatarUrl: '', color: 'bg-red-500' },
-       { name: 'User B', avatarUrl: '', color: 'bg-yellow-500' },
-       { name: 'User C', avatarUrl: '', color: 'bg-purple-500' },
-    ],
-    phoneCount: 5,
-    phoneTotal: 6,
-    phoneNumber: '+91 99718 44008',
-    lastMessageSenderAvatarUrl: '',
-  },
-  {
-    id: '3',
-    name: '+91 99999 99999',
-    labels: [
-      { name: 'Demo', color: 'text-yellow-700 bg-yellow-200' },
-      { name: 'Signup', color: 'text-green-700 bg-green-200' },
-    ],
-    lastMessage: "Hi there, I'm Swapnika, Co-Founder of ...",
-    timestamp: '25-Feb-25',
-     participants: [
-       { name: 'User X', avatarUrl: '', color: 'bg-indigo-500' },
-    ],
-    phoneCount: 1,
-    phoneTotal: 1,
-    phoneNumber: '+91 92896 65999',
-    lastMessageSenderAvatarUrl: '',
-  },
-    {
-    id: '4',
-    name: 'Test Demo17',
-    labels: [
-      { name: 'Content', color: 'text-green-700 bg-green-200' },
-    ],
-    lastMessage: 'Rohosen: 123',
-    timestamp: '25-Feb-25',
-     participants: [
-       { name: 'User Y', avatarUrl: '', color: 'bg-pink-500' },
-    ],
-    phoneCount: 2,
-    phoneTotal: 2,
-    phoneNumber: '+91 XXXX XXXX',
-    lastMessageSenderAvatarUrl: '',
-  },
-  {
-    id: '5',
-    name: 'Test El Centro',
-    labels: [
-      { name: 'Demo', color: 'text-yellow-700 bg-yellow-200' },
-    ],
-    lastMessage: 'Roshnaq: Hello, Ahmadport!',
-    timestamp: '04-Feb-25',
-     participants: [
-       { name: 'Roshnaq Airtel', avatarUrl: '', color: 'bg-green-500' },
-      { name: 'Roshnaq Jio', avatarUrl: '', color: 'bg-blue-500' },
-      { name: 'Bharat Kumar Ramesh', avatarUrl: '', color: 'bg-yellow-500' },
-      { name: 'Periskope', avatarUrl: '', color: 'bg-gray-400' },
-    ],
-    phoneCount: 5,
-    phoneTotal: 6,
-    phoneNumber: '+91 XXXX XXXX',
-    lastMessageSenderAvatarUrl: '',
-  },
-  // ...add more mock chats as needed
-]
+export interface Chat {
+  id: string
+  name: string
+  created_at: string
+  participants: {
+    id: string
+    email: string
+    display_name?: string
+    avatar_url?: string
+  }[]
+  last_message?: {
+  content: string;
+  id: string;
+  email: string;
+  name: string | null;
+  avatarUrl: string | null;
+  last_updated :DateConstructor;
+};
+}
+
+interface DatabaseMessage {
+  id: string;
+  chat_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  sender: {
+    id: string;
+    email: string;
+    name: string | null;
+    avatar_url: string | null;
+  };
+}
 
 interface ChatState {
-  chats: Chat[]; // Use the local Chat type
-  selectedChatId: string | null;
-  messages: any[]; // Replace with actual message type
-  loading: boolean;
-  selectChat: (id: string) => void;
-  // Add a getter for the selected chat data
-  getSelectedChat: () => Chat | undefined;
+  chats: Chat[]
+  selectedChatId: string | null
+  messages: Message[]
+  loading: boolean
+  error: string | null
+  realtimeChannel: RealtimeChannel | null
+  currentUserId: string | null
+  getCurrentUserId: () => Promise<string | null>
+  selectChat: (id: string) => void
+  getSelectedChat: () => Chat | undefined
+  sendMessage: (content: string, user: null | User) => Promise<void>
+  fetchChats: () => Promise<void>
+  fetchMessages: (chatId: string) => Promise<void>
+  subscribeToMessages: (chatId: string) => void
+  unsubscribeFromMessages: () => void
+  createChat: (name: string, participantEmails: string[]) => Promise<void>
+  onlineUsers: Set<string>
+  updateOnlineStatus: () => void
+  typingUsers: Record<string, Set<string>>
+  setTyping: (chatId: string, isTyping: boolean) => void
+  reconnect: () => Promise<void>
+  subscribeToChats: () => void
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
-  chats: mockChats, // Initialize with mock chats
+  chats: [],
   selectedChatId: null,
-  messages: [], // Initialize messages
+  messages: [],
   loading: false,
-  selectChat: (id) => set({ selectedChatId: id }),
-  // Implement the getter
-  getSelectedChat: () => {
-    const state = get();
-    return state.chats.find(chat => chat.id === state.selectedChatId);
+  error: null,
+  realtimeChannel: null,
+  currentUserId: null,
+  onlineUsers: new Set(),
+  typingUsers: {},
+
+  getCurrentUserId: async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+    return user.id
   },
-})); 
+
+  selectChat: async (id) => {
+    set({ selectedChatId: id, messages: [] })
+    const { fetchMessages, subscribeToMessages, unsubscribeFromMessages } = get()
+    
+    // Unsubscribe from previous chat if any
+    unsubscribeFromMessages()
+    
+    // Fetch messages and subscribe to new ones
+    await fetchMessages(id)
+    subscribeToMessages(id)
+  },
+
+  getSelectedChat: () => {
+    const state = get()
+    return state.chats.find(chat => chat.id === state.selectedChatId)
+  },
+
+  createChat: async (name: string, participantEmails: string[]) => {
+    set({ loading: true, error: null })
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+
+      // Get user IDs for all participants
+      const participantIds = [user.id] // Start with current user
+      
+      // Get IDs for other participants
+      for (const email of participantEmails) {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .single()
+
+        if (userError) {
+          console.error(`User not found: ${email}`)
+          continue
+        }
+
+        participantIds.push(userData.id)
+      }
+
+      // Create chat with participant_ids array
+      const { data: chat, error: chatError } = await supabase
+        .from('chats')
+        .insert({ 
+          name,
+          participant_ids: participantIds,
+          is_group: participantEmails.length > 0 // true if there are other participants
+        })
+        .select()
+        .single()
+
+      if (chatError) throw chatError
+
+      // Refresh chats list
+      await get().fetchChats()
+      
+      // Select the new chat
+      get().selectChat(chat.id)
+
+    } catch (error: any) {
+      set({ error: error.message })
+      throw error
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  sendMessage: async (content: string, user:User|null) => {
+    const { selectedChatId, getCurrentUserId } = get()
+    if (!selectedChatId) return
+    try {
+      const userId = await getCurrentUserId()
+      if (!userId) throw new Error('User not authenticated')
+
+      // First insert the message
+      const { data: message, error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          chat_id: selectedChatId,
+          sender_id: userId,
+          content,
+          sender_name: user?.user_metadata?.display_name || null,
+          sender_phone_number: user?.user_metadata?.phone_number || null,
+        })
+        .select()
+        .single()
+
+      if (messageError) throw messageError
+
+      // Then update the chat's last_message
+      const { error: chatError } = await supabase
+        .from('chats')
+        .update({
+          last_message: {
+            content: content,
+              id: userId,
+              email: user?.user_metadata?.email || '',
+              name: user?.user_metadata?.display_name || null,
+              avatarUrl: user?.user_metadata?.avatar_url || null,
+              phone: user?.phone,
+              last_updated:Date.now()
+          }
+        })
+        .eq('id', selectedChatId)
+
+      if (chatError) throw chatError
+
+      // Refresh chats to update the UI
+      await get().fetchChats()
+    } catch (error: any) {
+      set({ error: error.message })
+    }
+  },
+
+  fetchChats: async () => {
+    set({ loading: true, error: null })
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+
+      console.log('Current user ID:', user.id)
+
+      // First, let's get all chats without filtering
+      const { data: chats, error } = await supabase
+        .from('chats')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      console.log('All chats:', chats)
+
+      if (error) throw error
+
+      // Filter chats where the user is a participant
+      const userChats = chats?.filter(chat => 
+        chat.participant_ids.includes(user.id)
+      ) || []
+
+      console.log('Filtered user chats:', userChats)
+
+      // Get all unique participant IDs
+      const allParticipantIds = [...new Set(
+        userChats.flatMap(chat => chat.participant_ids)
+      )]
+
+      console.log('All participant IDs:', allParticipantIds)
+
+      // Fetch all participants in one query
+      const { data: participants } = await supabase
+        .from('users')
+        .select('id, email, display_name')
+        .in('id', allParticipantIds)
+
+      console.log('Fetched participants:', participants)
+
+      // Create a map for quick participant lookup
+      const participantMap = new Map(
+        participants?.map(p => [p.id, p]) || []
+      )
+
+      // Transform the data to match the Chat interface
+      const transformedChats = userChats.map(chat => ({
+        ...chat,
+        participants: chat.participant_ids.map((id: string) => 
+          participantMap.get(id) || { id, email: '', name: '' }
+        )
+      }))
+
+      console.log('Final transformed chats:', transformedChats)
+
+      set({ chats: transformedChats })
+    } catch (error: any) {
+      console.error('Error in fetchChats:', error)
+      set({ error: error.message })
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  fetchMessages: async (chatId: string) => {
+    set({ loading: true, error: null })
+    try {
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select(`
+          id,
+          chat_id,
+          sender_id,
+          content,
+          created_at,
+          sender_name,
+          sender_phone_number
+        `)
+        .eq('chat_id', chatId)
+        .order('created_at', { ascending: true })
+        console.log(messages,"messages")
+
+      if (error) throw error
+
+      // Transform the messages to match our interface
+      const transformedMessages: Message[] = (messages || []).map((msg: any) => ({
+        id: msg.id,
+        chat_id: msg.chat_id,
+        sender_id: msg.sender_id,
+        content: msg.content,
+        created_at: msg.created_at,
+        sender: {
+          id: msg.sender_id,
+          email: '', // We don't have email in the messages table
+          name: msg.sender_name,
+          avatarUrl: undefined // We don't have avatar in the messages table
+        }
+      }))
+
+      set({ messages: transformedMessages })
+    } catch (error: any) {
+      console.error('Error fetching messages:', error)
+      set({ error: error.message })
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  subscribeToMessages: (chatId: string) => {
+    const channel = supabase
+      .channel(`chat:${chatId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `chat_id=eq.${chatId}`
+        },
+        async (payload) => {
+          const { data: { user } } = await supabase.auth.getUser()
+          if (!user) return
+
+          // Fetch the new message with user details
+          const { data: message, error: messageError } = await supabase
+            .from('messages')
+            .select(`
+              id,
+              chat_id,
+              sender_id,
+              content,
+              created_at,
+              sender_name,
+              sender_phone_number
+            `)
+            .eq('id', payload.new.id)
+            .single()
+
+          if (messageError) {
+            console.error('Error fetching message details:', messageError)
+            return
+          }
+
+          if (message) {
+            const transformedMessage: Message = {
+              id: message.id,
+              chat_id: message.chat_id,
+              sender_id: message.sender_id,
+              content: message.content,
+              created_at: message.created_at,
+              sender: {
+                id: message.sender_id,
+                email: '', // We don't have email in the messages table
+                name: message.sender_name,
+                avatarUrl: undefined
+              }
+            }
+            set(state => ({
+              messages: [...state.messages, transformedMessage]
+            }))
+          }
+        }
+      )
+      .subscribe()
+
+    set({ realtimeChannel: channel })
+  },
+
+  unsubscribeFromMessages: () => {
+    const { realtimeChannel } = get()
+    if (realtimeChannel) {
+      realtimeChannel.unsubscribe()
+      set({ realtimeChannel: null })
+    }
+  },
+
+  updateOnlineStatus: async () => {
+    const userId = await get().getCurrentUserId()
+    if (!userId) return
+
+    const channel = supabase.channel('online_users')
+      .on('presence', { event: 'sync' }, () => {
+        const presenceState = channel.presenceState()
+        const onlineUsers = new Set(
+          Object.values(presenceState)
+            .flat()
+            .map((user: any) => user.user_id)
+        )
+        set({ onlineUsers })
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ user_id: userId })
+        }
+      })
+  },
+
+  setTyping: async (chatId: string, isTyping: boolean) => {
+    const userId = await get().getCurrentUserId()
+    if (!userId) return
+
+    const channel = supabase.channel(`typing:${chatId}`)
+      .on('presence', { event: 'sync' }, () => {
+        const presenceState = channel.presenceState()
+        const typingUsers = Object.entries(presenceState).reduce((acc, [chatId, users]) => {
+          acc[chatId] = new Set(
+            users
+              .filter((user: any) => user.typing)
+              .map((user: any) => user.user_id)
+          )
+          return acc
+        }, {} as Record<string, Set<string>>)
+        set({ typingUsers })
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ user_id: userId, typing: isTyping })
+        }
+      })
+  },
+
+  reconnect: async () => {
+    const { selectedChatId, subscribeToChats, subscribeToMessages } = get()
+    
+    // Reconnect to all subscriptions
+    await subscribeToChats()
+    if (selectedChatId) {
+      await subscribeToMessages(selectedChatId)
+    }
+  },
+
+  subscribeToChats: () => {
+    console.log('working')
+    const channel = supabase
+      .channel('chats')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'chats'
+        },
+        async () => {
+          // Refresh chats when any change occurs
+          await get().fetchChats();
+        }
+      )
+      .subscribe();
+
+    set({ realtimeChannel: channel });
+  }
+})) 

@@ -9,12 +9,22 @@ import ChatParentHeader from '@/components/ChatParentHeader'
 import SidebarNav from '@/components/ChatSidebar/SidebarNav'
 import RightSidebar from '@/components/RightSidebar'
 import { useChatStore } from '@/stores/chatStore'
+import { useTheme } from '@/src/components/ThemeProvider'
 
 export default function ChatPage() {
   const { selectedChatId } = useChatStore();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="flex h-screen w-screen bg-gray-900 overflow-x-hidden overflow-y-hidden">
+      {/* Add theme toggle button */}
+      <button 
+        onClick={toggleTheme}
+        className="fixed top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-white rounded"
+      >
+        Toggle Theme ({theme})
+      </button>
+
       {/* Vertical Icon Bar (Left Sidebar)*/}
       <SidebarNav />
 
@@ -90,21 +100,16 @@ export default function ChatPage() {
             -ms-overflow-style: none;
         }
 
-        /* Background image for light and dark modes on the main content area */
-        /* Light mode (default) */
-        :global(.light) .chat-main-background {
-          background-image: url('/assets/image/backgroundLight.jpg');
+        .chat-main-background {
           background-size: cover;
           background-repeat: repeat;
           background-attachment: fixed;
+          background-image: url('/assets/image/backgroundLight.jpg');
         }
 
-        /* Dark mode */
-        :global(.dark .chat-main-background) {
+        /* Dark mode using data-theme attribute */
+        [data-theme="dark"] .chat-main-background {
           background-image: url('/assets/image/backgroundDark.jpg');
-          background-size: cover;
-          background-repeat: repeat;
-          background-attachment: fixed;
         }
       `}</style>
     </div>

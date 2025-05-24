@@ -1,11 +1,29 @@
 "use client";
 
-import { useChatStore } from '@/stores/chatStore'
-import SentMessageBubble from './SentMessageBubble'
-import ReceivedMessageBubble from './ReceivedMessageBubble'
+import { format, isToday, isYesterday, isThisYear } from 'date-fns';
+import { useChatStore } from '@/stores/chatStore';
+import SentMessageBubble from './SentMessageBubble';
+import ReceivedMessageBubble from './ReceivedMessageBubble';
+import MessageInput from './MessageInput';
+import { useAuthStore } from '@/stores/authStore';
+import { useEffect, useRef } from 'react';
+
+interface Message {
+  id: string;
+  chat_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  sender: {
+    id: string;
+    email: string;
+    name?: string;
+    avatarUrl?: string;
+  };
+}
 
 // Mock messages for demonstration
-const mockMessages = [
+const mockMessages1 = [
   {
     id: 'm1',
     chatId: '1',
@@ -93,19 +111,59 @@ const mockMessages = [
   },
 ]
 
-type Message = typeof mockMessages[number];
-
 function groupMessagesByDate(messages: Message[]) {
   return messages.reduce<Record<string, Message[]>>((groups, msg) => {
-    (groups[msg.date] = groups[msg.date] || []).push(msg)
-    return groups
-  }, {})
+    const date = new Date(msg.created_at);
+    let groupKey: string;
+
+    if (isToday(date)) {
+      groupKey = 'Today';
+    } else if (isYesterday(date)) {
+      groupKey = 'Yesterday';
+    } else if (isThisYear(date)) {
+      groupKey = format(date, 'MMMM d'); // e.g., "March 15"
+    } else {
+      groupKey = format(date, 'MMMM d, yyyy'); // e.g., "March 15, 2023"
+    }
+
+    (groups[groupKey] = groups[groupKey] || []).push(msg);
+    return groups;
+  }, {});
 }
 
 export default function ChatWindow() {
-  const { selectedChatId } = useChatStore();
+  const { messages: mockMessages, getSelectedChat, selectedChatId, loading } = useChatStore();
+  const selectedChat = getSelectedChat();
+  const { user } = useAuthStore();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  if (!selectedChatId) {
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  };
+
+  // Scroll to bottom when messages are loaded
+  useEffect(() => {
+    if (selectedChatId && !loading && mockMessages.length > 0) {
+      scrollToBottom();
+    }
+  }, [selectedChatId, loading, mockMessages]);
+
+  // Auto-scroll when new messages arrive
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      // Only auto-scroll if user is already near bottom
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      if (isNearBottom) {
+        scrollToBottom();
+      }
+    }
+  }, [mockMessages]);
+
+  if (!selectedChat) {
     return (
       <div className="flex flex-col w-full items-center justify-center text-gray-400">
         <span className="text-lg">Select a chat to start messaging</span>
@@ -114,33 +172,42 @@ export default function ChatWindow() {
   }
 
   // Filter and group messages for the selected chat
-  const messages = mockMessages.filter(m => m.chatId === selectedChatId)
+  const messages = mockMessages.filter(m => m.chat_id === selectedChat.id)
   const grouped = groupMessagesByDate(messages)
   const dates = Object.keys(grouped).sort()
 
   return (
-    <div className="flex flex-col w-full ">
-      <div className="flex-1 overflow-y-auto px-2 chat-window-scrollbar">
-        {dates.map(date => (
-          <div key={date}>
-            {/* Date divider */}
-            <div className="flex justify-center my-4">
-              <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 text-xs px-3 py-1 rounded-full">
+    <div className="flex-1 flex flex-col h-full">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4">
+        {Object.entries(grouped).map(([date, msgs]) => (
+          <div key={date} className="mb-6">
+            <div className="text-center mb-4">
+              <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
                 {date}
               </span>
             </div>
-            {/* Messages for this date */}
-            <div className="flex flex-col gap-2">
-              {grouped[date].map(msg => (
-                msg.isOwn ? (
-                  <SentMessageBubble key={msg.id} {...msg} />
-                ) : (
-                  <ReceivedMessageBubble key={msg.id} {...msg} />
-                )
-              ))}
-            </div>
+            {msgs.map((message) => (
+              message.sender_id == user?.id ? (
+                <SentMessageBubble
+                  key={message.id}
+                  senderName={message.sender.name || message.sender.email}
+                  content={message.content}
+                  timestamp={message.created_at}
+                  avatarUrl={message.sender.avatarUrl}
+                />
+              ) : (
+                <ReceivedMessageBubble
+                  key={message.id}
+                  senderName={message.sender.name || message.sender.email}
+                  content={message.content}
+                  timestamp={message.created_at}
+                  avatarUrl={message.sender.avatarUrl}
+                />
+              )
+            ))}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <style jsx>{`
         .chat-window-scrollbar::-webkit-scrollbar {

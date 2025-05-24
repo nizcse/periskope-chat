@@ -1,9 +1,13 @@
 "use client";
-import { FiSearch, FiFilter, FiSave } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiSave, FiPlus } from 'react-icons/fi';
 import { IoMdRefresh } from 'react-icons/io';
 import { MdHelpOutline } from 'react-icons/md';
 
-export default function ChatListHeader() {
+interface ChatListHeaderProps {
+  onCreateChat: () => void;
+}
+
+export default function ChatListHeader({ onCreateChat }: ChatListHeaderProps) {
   return (
     <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
       <span className="text-green-600 font-semibold text-sm bg-green-50 dark:bg-green-900 px-2 py-1 rounded mr-2">Custom filter</span>
@@ -18,6 +22,13 @@ export default function ChatListHeader() {
           className="bg-transparent outline-none text-sm flex-1 py-1 text-gray-700 dark:text-gray-200"
         />
       </div>
+      <button 
+        onClick={onCreateChat}
+        className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-green-600" 
+        title="Create New Chat"
+      >
+        <FiPlus size={18} />
+      </button>
       <button className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" title="Filter">
         <FiFilter size={18} />
       </button>

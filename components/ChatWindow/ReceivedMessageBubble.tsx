@@ -44,7 +44,7 @@ export default function ReceivedMessageBubble({
 
           {/* Timestamp (Absolutely positioned) */}
           <span className="absolute bottom-1 right-2 text-[10px] text-gray-400 dark:text-gray-300 select-none">
-            {timestamp}
+            {(new Date(timestamp).toUTCString().slice(-11, -4))}
           </span>
         </div>
       </div>
